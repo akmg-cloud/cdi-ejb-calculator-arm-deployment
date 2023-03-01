@@ -1,7 +1,28 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  
   "parameters": {
+    "siteName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the function app that you wish to create."
+      }
+    },
+    "_artifactsLocation": {
+        "type": "string",
+        "metadata": {
+            "description": "The base URI where artifacts required by this template are located including a trailing '/'"
+        },
+        "defaultValue": "https://raw.githubusercontent.com/akmg-cloud/cdi-ejb-calculator-arm-deployment/main"
+    },
+    "_artifactsLocationSasToken": {
+        "type": "securestring",
+        "metadata": {
+            "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated. Use the defaultValue if the staging location is not secured."
+        },
+        "defaultValue": ""
+    },
     "appServiceName": {
       "type": "string",
       "minLength": 1,
@@ -34,9 +55,30 @@
     }
   },
   "variables": {
-    "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]"
+    "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]",
+    "acrName": "[concat(parameters('siteName'), 'acr')]"
    },
   "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedAcrTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deply.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
+          "acrAdminUserEnabled": {
+            "value": true
+          }
+        }
+      }
+    },
     {
       "name": "[variables('appHostingPlanNameVar')]",
       "type": "Microsoft.Web/serverfarms",
