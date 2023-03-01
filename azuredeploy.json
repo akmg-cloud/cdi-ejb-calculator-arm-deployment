@@ -14,7 +14,7 @@
         "metadata": {
             "description": "The base URI where artifacts required by this template are located including a trailing '/'"
         },
-        "defaultValue": "https://raw.githubusercontent.com/akmg-cloud/cdi-ejb-calculator-arm-deployment/main"
+        "defaultValue": "https://raw.githubusercontent.com/akmg-cloud/cdi-ejb-calculator-arm-deployment/main/"
     },
     "_artifactsLocationSasToken": {
         "type": "securestring",
@@ -66,7 +66,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deply.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deploy.json', parameters('_artifactsLocationSasToken')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
