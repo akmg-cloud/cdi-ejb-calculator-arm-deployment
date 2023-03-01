@@ -4,6 +4,7 @@
     "parameters": {
         "appServiceName": { "value": "akmgsrv" },
         "appServicePlanName": { "value": "akmgplan" },
-        "appServicePlanSkuName":  {"value": "F1"}
+        "appServicePlanSkuName":  {"value": "F1"},
+        "sitename":  {"value": "akmgsite"}
     }
 }
