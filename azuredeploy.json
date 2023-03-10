@@ -154,7 +154,7 @@
         "linkedAciContainerTemplate"
       ],
       "properties": {
-        "name": "[variables('appHostingPlanNameVar')]",
+        "name": "[parameters('appServicePlanName')]",
         "reserved": true,
         "numberOfWorkers": "1"
       },
