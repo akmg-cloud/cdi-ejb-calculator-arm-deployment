@@ -24,7 +24,7 @@
                 "az",
                 "--help"
               ],
-              "image": "mcr.microsoft.com/azure-cli",
+              "image": "mcr.microsoft.com/azure-cli:latest",
               "resources": {
                 "requests": {
                   "cpu": 1,
