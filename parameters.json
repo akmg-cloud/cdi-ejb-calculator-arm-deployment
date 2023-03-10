@@ -5,6 +5,7 @@
         "appServiceName": { "value": "akmgsrv" },
         "appServicePlanName": { "value": "akmgplan" },
         "appServicePlanSkuName":  {"value": "F1"},
-        "siteName":  {"value": "akmgsite"}
+        "siteName":  {"value": "akmgsite"},
+        "dockerImageName": {"value": "cdi-ejb-calculator:latest"}
     }
 }
