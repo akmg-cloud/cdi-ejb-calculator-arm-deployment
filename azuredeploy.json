@@ -148,7 +148,7 @@
       "apiVersion": "2018-02-01",
       "type": "Microsoft.Web/serverfarms",
       "kind": "linux",
-      "name": "[variables('appServicePlanName')]",
+      "name": "[parameters('appServicePlanName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "linkedAciContainerTemplate"
@@ -168,7 +168,7 @@
       "name": "[parameters('siteName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       ],
       "properties": {
         "siteConfig": {
@@ -193,7 +193,7 @@
           ],
           "linuxFxVersion": "[concat('DOCKER|', reference('linkedAcrTemplate').outputs.acrLoginServer.value, '/', parameters('dockerImageName'))]"
         },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
       }
     }
   ],
