@@ -105,10 +105,6 @@
       "properties": {
         "roleDefinitionId": "[variables('arcPullRole')]",
 	"principalId": "[parameters('spIdentity')]"
-        
-        "roleDefinitionId": "[variables('roleContributor')]",
-        "principalId": "[reference('linkedAciTemplate').outputs.principalId.value]",
-        "scope": "[resourceGroup().id]"
       }
     }
   ],
