@@ -100,7 +100,7 @@
       "apiVersion": "2017-05-01",
       "name": "[variables('roleNameGUID')]",
       "dependsOn": [
-        "linkedAciTemplate"
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))]"
       ],
       "properties": {
         "roleDefinitionId": "[variables('arcPullRole')]",
