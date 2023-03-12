@@ -35,7 +35,7 @@
     {
       "name": "[parameters('acrName')]",
       "type": "Microsoft.ContainerRegistry/registries",
-      "apiVersion": "2022-12-01",
+      "apiVersion": "2019-10-01",
       "location": "[resourceGroup().location]",
       "comments": "Container registry for storing docker images",
       "tags": {
