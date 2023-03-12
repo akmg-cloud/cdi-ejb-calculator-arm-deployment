@@ -72,6 +72,7 @@
     "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]",
     "acrName": "[concat(parameters('siteName'), 'acr')]",
     "arcPullRole": "[concat('/subscriptions/',subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+    "roleContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
     "roleAssignmentName": "[concat(variables('acrName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('arcPullRole')))]"
    },
   "resources": [
@@ -105,6 +106,39 @@
       "properties": {
         "roleDefinitionId": "[variables('arcPullRole')]",
 	"principalId": "[parameters('spIdentity')]"
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedAciTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "linkedAcrTemplate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-instance-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "siteName": {
+            "value": "[parameters('siteName')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2017-05-01",
+      "name": "[variables('roleNameGUID')]",
+      "dependsOn": [
+        "linkedAciTemplate"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('roleContributor')]",
+        "principalId": "[parameters('spIdentity')]",
+        "scope": "[resourceGroup().id]"
       }
     }
   ],
