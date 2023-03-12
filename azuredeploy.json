@@ -130,7 +130,7 @@
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-09-01",
+      "apiVersion": "2022-04-01",
       "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1611",
       "dependsOn": [
         "linkedAciTemplate"
