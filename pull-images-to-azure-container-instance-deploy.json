@@ -10,7 +10,8 @@
     }
   },
   "variables": {
-    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]"
+    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]",
+    "identityName": "akmg-cloud-azure-identity"
   },
   "resources": [
     {
@@ -19,7 +20,10 @@
       "name": "[concat(parameters('siteName'), '-aci')]",
       "location": "[resourceGroup().location]",
       "identity": {
-        "type": "SystemAssigned"
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+              "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',variables('identityName'))]": {}
+          }
       },
       "properties": {
         "containers": [
