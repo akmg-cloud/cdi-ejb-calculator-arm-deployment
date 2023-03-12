@@ -98,7 +98,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2017-05-01",
-      "name": "[variables('roleAssignmentName')]",
+      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1610",
       "dependsOn": [
         "linkedAcrTemplate"
       ],
