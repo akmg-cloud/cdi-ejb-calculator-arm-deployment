@@ -13,10 +13,7 @@
       "name": "[concat(parameters('siteName'), '-aci')]",
       "location": "[resourceGroup().location]",
       "identity": {
-         "type": "userAssigned",
-         "userAssignedIdentities": {
-             "/subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourcegroups/akmg-cloud-azure-apps/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akmg-cloud-azure-identity": {}
-         }
+        "type": "SystemAssigned"
       },
       "properties": {
         "containers": [
@@ -42,5 +39,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "principalId": {
+      "type": "string",
+      "value": "[reference(concat(resourceId('Microsoft.ContainerInstance/containerGroups', concat(parameters('siteName'), '-aci')), '/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').principalId]"
+    }
+  }
 }
