@@ -163,6 +163,19 @@
           }
         }
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2017-05-01",
+      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1611",
+      "dependsOn": [
+        "linkedAciContainerTemplate"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('roleContributor')]",
+        "principalId": "[parameters('spIdentity')]",
+        "scope": "[resourceGroup().id]"
+      }
     }
   ],
   "outputs": {}
