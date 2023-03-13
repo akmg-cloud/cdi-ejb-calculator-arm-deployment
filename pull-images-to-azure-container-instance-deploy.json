@@ -45,7 +45,12 @@
           }
         ],
         "osType": "Linux",
-        "restartPolicy": "Never"
+        "restartPolicy": "Never",
+        "imageRegistryCredentials": [{
+	    "identity": "/subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourcegroups/akmg-cloud-azure-apps/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akmg-cloud-azure-identity",
+	    "server": "akmgcloud.azurecr.io"
+	  }
+        ]
       }
     }
   ],
