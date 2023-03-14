@@ -6,6 +6,9 @@
       "type": "string"
     }
   },
+  "variables": {
+    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]"
+  },
   "resources": [
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
@@ -24,8 +27,9 @@
             "name": "[concat(parameters('siteName'),'-aci')]",
             "properties": {
               "command": [
-                "az",
-                "--help"
+                "sh",
+                "-c",
+                "[variables('script')]"
               ],
               "image": "mcr.microsoft.com/azure-cli:latest",
               "resources": {

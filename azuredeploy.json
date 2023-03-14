@@ -105,7 +105,8 @@
       ],
       "properties": {
         "roleDefinitionId": "[variables('arcPullRole')]",
-	"principalId": "[parameters('spIdentity')]"
+	"principalId": "[parameters('spIdentity')]",
+        "scope": "[resourceGroup().id]"
       }
     },
     {
@@ -139,29 +140,6 @@
         "roleDefinitionId": "[variables('roleContributor')]",
         "principalId": "[parameters('spIdentity')]",
         "scope": "[resourceGroup().id]"
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "linkedAciContainerTemplate",
-      "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "f7036b05-3cc5-4159-8f6e-250fcf9e1611"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('pull-images-to-azure-container-instance-deploy.json', parameters('_artifactsLocationSasToken')))]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "siteName": {
-            "value": "[parameters('siteName')]"
-          },
-          "acrName": {
-            "value": "[variables('acrName')]"
-          }
-        }
       }
     }
   ],
