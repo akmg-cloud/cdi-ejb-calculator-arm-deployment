@@ -4,7 +4,7 @@
     "parameters": {
         "appServiceName": { "value": "akmgsrv" },
         "appServicePlanName": { "value": "akmgplan" },
-        "appServicePlanSkuName":  {"value": "F1"},
+        "appServicePlanSkuName":  {"value": "B1"},
         "siteName":  {"value": "akmgsite"},
         "dockerImageName": {"value": "cdi-ejb-calculator:latest"}
     }
