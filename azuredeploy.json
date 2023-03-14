@@ -125,6 +125,9 @@
         "parameters": {
           "siteName": {
             "value": "[parameters('siteName')]"
+          },
+          "acrName": {
+            "value": "[variables('acrName')]"
           }
         }
       }
