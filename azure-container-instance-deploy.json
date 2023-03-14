@@ -4,6 +4,9 @@
   "parameters": {
     "siteName": {
       "type": "string"
+    },
+    "acrName": {
+      "type": "string"
     }
   },
   "variables": {
