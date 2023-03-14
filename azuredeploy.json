@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/20150101/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   
   "parameters": {
@@ -14,7 +14,7 @@
         "metadata": {
             "description": "The base URI where artifacts required by this template are located including a trailing '/'"
         },
-        "defaultValue": "https://raw.githubusercontent.com/akmg-cloud/cdi-ejb-calculator-arm-deployment/main/"
+        "defaultValue": "https://raw.githubusercontent.com/akmgcloud/cdiejbcalculatorarmdeployment/main/"
     },
     "_artifactsLocationSasToken": {
         "type": "securestring",
@@ -50,18 +50,18 @@
         "P4"
       ],
       "metadata": {
-        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/enus/pricing/details/appservice/"
       }
     },
     "dockerImageName": {
       "type": "string",
-      "defaultValue": "cdi-ejb-calculator:latest",
+      "defaultValue": "cdiejbcalculator:latest",
  	"metadata": {
         "description": "Describes the name of the docker image which will be finally deployed"
       }
     },
     "spIdentity": {
-	"defaultValue": "783ba0eb-48b1-4259-892c-76e320992a87",
+	"defaultValue": "783ba0eb48b14259892c76e320992a87",
 	"type": "String",
 	"metadata": {
 		"description": "The service principal ID of the used managed identity."
@@ -69,21 +69,21 @@
      }
   },
   "variables": {
-    "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]",
+    "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'apps')]",
     "acrName": "[concat(parameters('siteName'), 'acr')]",
-    "arcPullRole": "[concat('/subscriptions/',subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
-    "roleContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+    "arcPullRole": "[concat('/subscriptions/',subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda4ed34680a7ca43fe172d538d')]",
+    "roleContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac618042a0ab8820f7382dd24c')]",
     "roleAssignmentName": "[concat(variables('acrName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('arcPullRole')))]"
    },
   "resources": [
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "20170510",
       "name": "linkedAcrTemplate",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azurecontainerregistrydeploy.json', parameters('_artifactsLocationSasToken')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -98,8 +98,8 @@
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2017-05-01",
-      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1610",
+      "apiVersion": "20170501",
+      "name": "f7036b053cc541598f6e250fcf9e1610",
       "dependsOn": [
         "linkedAcrTemplate"
       ],
@@ -110,7 +110,7 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "20170510",
       "name": "linkedAciTemplate",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
@@ -119,7 +119,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-instance-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azurecontainerinstancedeploy.json', parameters('_artifactsLocationSasToken')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -134,8 +134,8 @@
     },
     {
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2017-05-01",
-      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1611",
+      "apiVersion": "20170501",
+      "name": "f7036b053cc541598f6e250fcf9e1611",
       "dependsOn": [
         "linkedAciTemplate"
       ],
@@ -144,7 +144,59 @@
         "principalId": "[parameters('spIdentity')]",
         "scope": "[resourceGroup().id]"
       }
-    }
+    },
+    {
+      "apiVersion": "20180201",
+      "type": "Microsoft.Web/serverfarms",
+      "kind": "linux",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "linkedAciTemplate"
+      ],
+      "properties": {
+        "name": "[parameters('appServicePlanName')]",
+        "reserved": true,
+        "numberOfWorkers": "1"
+      },
+      "sku": {
+        "name": "[parameters('appServicePlanSkuName')]"
+      }
+    },
+    {
+      "apiVersion": "20180201",
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('siteName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "name": "[parameters('siteName')]",
+          "appSettings": [
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "[reference('linkedAcrTemplate').outputs.acrLoginServer.value]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "[reference('linkedAcrTemplate').outputs.registryUsername.value]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "[reference('linkedAcrTemplate').outputs.registryPassword.value]"
+            }
+          ],
+          "linuxFxVersion": "[concat('DOCKER|', reference('linkedAcrTemplate').outputs.acrLoginServer.value, '/', parameters('dockerImageName'))]"
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      }
+     }
   ],
   "outputs": {}
 }
