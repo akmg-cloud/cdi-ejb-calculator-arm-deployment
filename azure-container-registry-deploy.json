@@ -2,13 +2,26 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-
     "acrName": {
       "type": "string",
       "minLength": 5,
       "maxLength": 50,
       "metadata": {
         "description": "Name of your Azure Container Registry"
+      }
+    },
+    "identityName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the identity resource"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Principal of user assigned managed id"
       }
     },
     "acrAdminUserEnabled": {
@@ -31,6 +44,9 @@
       ]
     }
   },
+  "variables":{
+    "arcPullRole": "[concat('/subscriptions/',subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"   
+  },
   "resources": [
     {
       "name": "[parameters('acrName')]",
@@ -52,8 +68,21 @@
       "identity": {
          "type": "userAssigned",
          "userAssignedIdentities": {
-             "/subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourcegroups/akmg-cloud-azure-apps/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akmg-cloud-azure-identity": {}
+             "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('identityName')), '2018-11-30').principalId]": {}
          }
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1610",
+      "dependsOn": [
+        "linkedAcrTemplate"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('arcPullRole')]",
+	"principalId": "[parameters('principalId')]",
+        "scope": "[resourceGroup().id]"
       }
     }
   ],

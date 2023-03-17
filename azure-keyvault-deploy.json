@@ -120,9 +120,13 @@
     }
   ],
   "outputs": {
-     "managedIdentityPrincipalId": {
+     "principalId": {
       "type": "string",
       "value": "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('identityName')), '2018-11-30').principalId]"
+    },
+    "identityName": {
+      "type": "string",
+      "value": "[parameters('identityName')]"
     }
   }
 }

@@ -71,7 +71,6 @@
   "variables": {
     "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]",
     "acrName": "[concat(parameters('siteName'), 'acr')]",
-    "arcPullRole": "[concat('/subscriptions/',subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
     "roleContributor": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
     "roleAssignmentName": "[concat(variables('acrName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('arcPullRole')))]"
    },
@@ -83,120 +82,33 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-keyfault-deploy.json', parameters('_artifactsLocationSasToken')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "acrName": {
-            "value": "[variables('acrName')]"
-          },
-          "acrAdminUserEnabled": {
-            "value": true
-          }
         }
-      }
-    },
-    {
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2017-05-01",
-      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1610",
-      "dependsOn": [
-        "linkedAcrTemplate"
-      ],
-      "properties": {
-        "roleDefinitionId": "[variables('arcPullRole')]",
-	"principalId": "[parameters('spIdentity')]",
-        "scope": "[resourceGroup().id]"
       }
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "linkedAciTemplate",
+      "name": "linkedAcrTemplate",
       "type": "Microsoft.Resources/deployments",
-      "dependsOn": [
-        "linkedAcrTemplate"
-      ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-instance-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deploy.json', parameters('_artifactsLocationSasToken')))]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "siteName": {
-            "value": "[parameters('siteName')]"
+          "identityName": {
+            "value": "[reference('linkedAcrTemplate').outputs.identityName.value]"
           },
-          "acrName": {
-            "value": "[variables('acrName')]"
+          "principalId": {
+            "value": "[reference('linkedAcrTemplate').outputs.principalId.value]"
           }
         }
       }
     },
-    {
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2017-05-01",
-      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1611",
-      "dependsOn": [
-        "linkedAciTemplate"
-      ],
-      "properties": {
-        "roleDefinitionId": "[variables('roleContributor')]",
-        "principalId": "[parameters('spIdentity')]",
-        "scope": "[resourceGroup().id]"
-      }
-    },
-    {
-      "apiVersion": "2018-02-01",
-      "type": "Microsoft.Web/serverfarms",
-      "kind": "linux",
-      "name": "[parameters('appServicePlanName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "linkedAciTemplate"
-      ],
-      "properties": {
-        "name": "[parameters('appServicePlanName')]",
-        "reserved": true,
-        "numberOfWorkers": "1"
-      },
-      "sku": {
-        "name": "[parameters('appServicePlanSkuName')]"
-      }
-    },
-    {
-      "apiVersion": "2018-02-01",
-      "type": "Microsoft.Web/sites",
-      "name": "[parameters('siteName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
-      ],
-      "properties": {
-        "siteConfig": {
-          "name": "[parameters('siteName')]",
-          "appSettings": [
-            {
-              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
-              "value": "true"
-            },
-            {
-              "name": "DOCKER_REGISTRY_SERVER_URL",
-              "value": "[reference('linkedAcrTemplate').outputs.acrLoginServer.value]"
-            },
-            {
-              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
-              "value": "[reference('linkedAcrTemplate').outputs.registryUsername.value]"
-            },
-            {
-              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
-              "value": "[reference('linkedAcrTemplate').outputs.registryPassword.value]"
-            }
-          ],
-          "linuxFxVersion": "[concat('DOCKER|', reference('linkedAcrTemplate').outputs.acrLoginServer.value, '/', parameters('dockerImageName'))]"
-        },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
-      }
-    }
   ],
   "outputs": {}
 }
