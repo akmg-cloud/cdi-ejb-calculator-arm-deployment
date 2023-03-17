@@ -99,10 +99,10 @@
         },
         "parameters": {
           "identityName": {
-            "value": "[reference('linkedAcrTemplate').outputs.identityName.value]"
+            "value": "[reference('linkedKeyVaultTemplate').outputs.identityName.value]"
           },
           "principalId": {
-            "value": "[reference('linkedAcrTemplate').outputs.principalId.value]"
+            "value": "[reference('linkedKeyVaultTemplate').outputs.principalId.value]"
           }
         }
       }
