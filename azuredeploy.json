@@ -75,7 +75,7 @@
   "resources": [
     {
       "apiVersion": "2017-05-10",
-      "name": "linkedAcrTemplate",
+      "name": "linkedKeyVaultTemplate",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
