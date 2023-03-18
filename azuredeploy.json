@@ -86,6 +86,35 @@
         "parameters": {
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedAcrTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "linkedKeyVaultTemplate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-registry-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "identityName": {
+            "value": "[reference('linkedKeyVaultTemplate').outputs.identityName.value]"
+          },
+          "principalId": {
+            "value": "[reference('linkedKeyVaultTemplate').outputs.principalId.value]"
+          },
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
+          "acrAdminUserEnabled": {
+            "value": true
+          }
+        }
+      }
     }
   ],
   "outputs": {}
