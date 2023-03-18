@@ -103,6 +103,12 @@
           },
           "principalId": {
             "value": "[reference('linkedKeyVaultTemplate').outputs.principalId.value]"
+          },
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
+          "acrAdminUserEnabled": {
+            "value": true
           }
         }
       }
