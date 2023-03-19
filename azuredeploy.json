@@ -113,6 +113,35 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedAciTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "linkedAcrTemplate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-container-instance-deploy.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "identityName": {
+            "value": "[reference('linkedKeyVaultTemplate').outputs.identityName.value]"
+          },
+          "principalId": {
+            "value": "[reference('linkedKeyVaultTemplate').outputs.principalId.value]"
+          },
+          "siteName": {
+            "value": "[parameters('siteName')]"
+          },
+          "acrName": {
+            "value": "[variables('acrName')]"
+          }
+        }
+      }
     }
   ],
   "outputs": {}

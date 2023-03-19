@@ -7,10 +7,25 @@
     },
     "acrName": {
       "type": "string"
+    },
+    "identityName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the identity resource"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 50,
+      "metadata": {
+        "description": "Principal of user assigned managed id"
+      }
     }
   },
   "variables": {
-    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]"
+    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]",
+    "contentRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
   },
   "resources": [
     {
@@ -21,7 +36,7 @@
       "identity": {
          "type": "userAssigned",
          "userAssignedIdentities": {
-             "/subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourcegroups/akmg-cloud-azure-apps/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akmg-cloud-azure-identity": {}
+             "[concat('/subscriptions/', subscription().subscriptionId, '/resourcegroups/', resourceGroup().name, '/providers/','Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('identityName'))]": {}
          }
       },
       "properties": {
@@ -68,12 +83,21 @@
             ]
          }
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "f7036b05-3cc5-4159-8f6e-250fcf9e1611",
+      "dependsOn": [
+        "linkedAciTemplate"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('contentRole')]",
+        "principalId": "[parameters('principalId')]",
+        "scope": "[resourceGroup().id]"
+      }
     }
   ],
   "outputs": {
-    "principalId": {
-      "type": "string",
-      "value": "[reference(resourceId('5b84530d-e5b7-4cc3-974d-76509ead3199','akmg-cloud-azure-apps','Microsoft.ManagedIdentity/userAssignedIdentities', 'akmg-cloud-azure-identity'),'2018-11-30','Full').properties.principalId]"
-    }
   }
 }
