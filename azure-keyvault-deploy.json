@@ -4,7 +4,7 @@
   "parameters": {
     "keyVaultName": {
       "type": "string",
-      "defaultValue": "[concat('keyvault', uniqueString(resourceGroup().id))]",
+      "defaultValue": "[concat('akmgkeyvault', substring(uniqueString(resourceGroup().id),0,6))]",
       "metadata": {
         "description": "Specifies the name of the key vault."
       }
