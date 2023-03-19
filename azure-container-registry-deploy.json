@@ -68,7 +68,7 @@
       "identity": {
          "type": "userAssigned",
          "userAssignedIdentities": {
-             "[parameters('principalId')]": {}
+             "[concat('/subscriptions/', subscription().subscriptionId, 'resourcegroups/', resourceGroups.name(), ,'/providers/','Microsoft.ManagedIdentity/userAssignedIdentities/', 'parameters('identityName'))]" : {}
          }
       }
     },
