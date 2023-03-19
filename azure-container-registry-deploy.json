@@ -68,7 +68,7 @@
       "identity": {
          "type": "userAssigned",
          "userAssignedIdentities": {
-             "[reference(resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('identityName')), '2018-11-30').principalId]": {}
+             "[parameters('principalId')]": {}
          }
       }
     },
