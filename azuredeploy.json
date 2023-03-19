@@ -70,7 +70,7 @@
   },
   "variables": {
     "appHostingPlanNameVar": "[concat(parameters('appServicePlanName'),'-apps')]",
-    "acrName": "[concat(parameters('siteName'), 'acr')]"
+    "acrNameVar": "[concat(parameters('siteName'), 'acr')]"
   },
   "resources": [
     {
@@ -106,7 +106,7 @@
             "value": "[reference('linkedKeyVaultTemplate').outputs.principalId.value]"
           },
           "acrName": {
-            "value": "[variables('acrName')]"
+            "value": "[variables('acrNameVar')]"
           },
           "acrAdminUserEnabled": {
             "value": true
