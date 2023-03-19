@@ -25,7 +25,7 @@
   },
   "variables": {
     "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]",
-    "contentRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+    "contentRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
   },
   "resources": [
     {
