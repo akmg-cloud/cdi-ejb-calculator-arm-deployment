@@ -43,9 +43,6 @@
       "kind": "linux",
       "name": "[parameters('appServicePlanName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "linkedAciTemplate"
-      ],
       "properties": {
         "name": "[parameters('appServicePlanName')]",
         "reserved": true,
