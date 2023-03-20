@@ -166,6 +166,9 @@
           "appServicePlanSkuName": {
             "value": "[parameters('appServicePlanSkuName')]"
           },
+          "dockerImageName": {
+            "value": "[parameters('dockerImageName')]"
+          },
           "acrServer": {
             "value": "[reference('linkedAcrTemplate').outputs.acrLoginServer.value]"
           },
