@@ -160,9 +160,6 @@
           "siteName": {
             "value": "[parameters('siteName')]"
           },
-          "acrName": {
-            "value": "[variables('acrName')]"
-          },
           "appServicePlanSkuName": {
             "value": "[parameters('appServicePlanName')]"
           },
