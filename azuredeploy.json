@@ -142,6 +142,45 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "linkedWebAppTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "linkedAciTemplate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(parameters('_artifactsLocation'), concat('azure-webapp-deplay.json', parameters('_artifactsLocationSasToken')))]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "siteName": {
+            "value": "[parameters('siteName')]"
+          },
+          "acrName": {
+            "value": "[variables('acrName')]"
+          },
+          "appServicePlanSkuName": {
+            "value": "[variables('appServicePlanName')]"
+          },
+          "appServicePlanSkuName": {
+            "value": "[variables('appServicePlanSkuName')]"
+          },
+          "acrServer": {
+            "value": "[reference('linkedAcrTemplate').outputs.acrLoginServer.value]"
+          },
+          "acrServerUsername": {
+            "value": "[reference('linkedAcrTemplate').outputs.registryUsername.value]"
+          },
+          "acrServerPassword": {
+            "value": "[reference('linkedAcrTemplate').outputs.registryPassword.value]"
+          }
+          
+        }
+      }
     }
   ],
   "outputs": {}

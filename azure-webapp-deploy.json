@@ -1,0 +1,114 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "siteName": {
+      "type": "string"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "appServicePlanSkuName": {
+      "type": "string",
+      "defaultValue": "B1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
+    "dockerImageName": {
+      "type": "string",
+      "defaultValue": "cdi-ejb-calculator:latest",
+ 	"metadata": {
+        "description": "Describes the name of the docker image which will be finally deployed"
+      }
+    },
+    "acrServer": {
+      "type": "string",
+      "description": "Describes the name of the docker registry for image pulling"
+    },
+    "acrServerUsername": {
+      "type": "string",
+      "description": "Describes the username of the docker registry for image pulling"
+    },
+    "acrServerPassword": {
+      "type": "string",
+      "description": "Describes the password of the docker registry for image pulling"
+    }
+  },
+  "variables": {
+    "script": "[concat('( sleep 5 ; az login --identity ; az acr import --name ', parameters('acrName'), ' --source cdi-ejb-calculator:latest --image cdi-ejb-calculator:latest --registry /subscriptions/5b84530d-e5b7-4cc3-974d-76509ead3199/resourceGroups/akmg-cloud-azure-apps/providers/Microsoft.ContainerRegistry/registries/akmgcloud)')]",
+    "contentRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]"
+  },
+  "resources": [
+     {
+      "apiVersion": "2018-02-01",
+      "type": "Microsoft.Web/serverfarms",
+      "kind": "linux",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "linkedAciTemplate"
+      ],
+      "properties": {
+        "name": "[parameters('appServicePlanName')]",
+        "reserved": true,
+        "numberOfWorkers": "1"
+      },
+      "sku": {
+        "name": "[parameters('appServicePlanSkuName')]"
+      }
+    },
+    {
+      "apiVersion": "2018-02-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('siteName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "name": "[parameters('siteName')]",
+          "appSettings": [
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "true"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "[parameters('acrServer')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "[parameters('acrServerUsername')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "[parameters('acrServerPassword')]"
+            }
+          ],
+          "linuxFxVersion": "[concat('DOCKER|', parameters('acrServer'), '/', parameters('dockerImageName'))]"
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      }
+    }
+    
+  ],
+  "outputs": {
+  }
+}
